@@ -1,0 +1,100 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  name String
+  login String @unique
+  password String
+  accountant_balance Decimal
+  companies Company[]
+  expenses Expense[]
+  commonTransactions CommonUserTransaction[]
+  transactions Transaction[]
+  logs Log[]
+  transactionTypes TransactionType []
+}
+
+model Company {
+  id Int @id @default(autoincrement())
+  name String @unique
+  working_capital Decimal
+  user_id Int
+  user User @relation(fields: [user_id], references: [id])
+  Expenses Expense[]
+  transactions Transaction[]
+}
+
+model Expense {
+  id Int @id @default(autoincrement())
+  name String @unique
+  amount Decimal
+  user_id Int
+  user User @relation(fields: [user_id], references: [id])
+  companies Company[]
+}
+
+model CommonUserTransaction {
+  id Int @id @default(autoincrement())
+  name String @unique
+  user_id Int
+  user User @relation(fields: [user_id], references: [id])
+}
+
+model Transaction {
+  id Int @id @default(autoincrement())
+  name String @unique
+  amount Decimal
+  transaction_date DateTime
+  created_at DateTime @default(now())
+  user_id Int
+  user User @relation(fields: [user_id], references: [id])
+  company_id Int?
+  company Company? @relation(fields: [company_id], references: [id])
+  file File?
+  transaction_type_id Int?
+  transactionType TransactionType? @relation(fields: [transaction_type_id], references: [id])
+} 
+
+model TransactionType{
+  id Int @id @default(autoincrement())
+  name String @unique
+  transactions Transaction[]
+  user_id Int
+  user User @relation(fields: [user_id], references: [id])
+}
+
+model File {
+  id Int @id @default(autoincrement())
+  sha1 String @unique
+  transaction_id Int @unique
+  transaction Transaction @relation(fields: [transaction_id], references: [id])
+}
+
+model Log {
+  id Int @id @default(autoincrement())
+  table String
+  old_value Json
+  changed_date DateTime @default(now())
+  register_id Int
+  reason String
+  user_id Int
+  user User @relation(fields: [user_id], references: [id])
+  operation_type_id Int
+  operation_type LogOperationType @relation(fields: [operation_type_id], references: [id])
+}
+
+model LogOperationType {
+  id Int @id @default(autoincrement())
+  name String @unique
+  log Log[]
+}
