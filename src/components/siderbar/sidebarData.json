@@ -1,0 +1,12 @@
+[
+    {
+        "title": "Home",
+        "icon": ["fa-solid", "fa-house"],
+        "path": "/"
+    },
+    {
+        "title": "Expenses",
+        "icon": ["fa-solid", "fa-wallet"],
+        "path": "/expenses"
+    }
+]
